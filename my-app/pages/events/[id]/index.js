@@ -8,6 +8,7 @@ import UserContext from "../../../utils/userContext";
 function eventsDetails({event, registrations}) {
     const {user, setUser} = useContext(UserContext)
     const [registered, setRegistered] = useState(false)
+    const [registrationList, setRegistrations] = useState(registrations)
     const [comment, setComment] = useState('')
     const router = useRouter();
     const { id } = router.query;
@@ -16,9 +17,9 @@ function eventsDetails({event, registrations}) {
       async function fetchUser() {
         const res = await fetch(`${BASE_URL}/events/${id}`)
         const result = await res.json()
-        const registrations = await result.registrations
-        console.log('haleluja', registrations)
+        const registrations = await result.registrations          
         const JSONuser= await JSON.parse(user)
+        console.log('registrationList ', registrationList)
         const userRegistrations = registrations.filter(
           (registration) => registration.id === JSONuser.id
         )
@@ -29,7 +30,7 @@ function eventsDetails({event, registrations}) {
       if (user){
         fetchUser()
       }
-    }, [])
+    }, [user, registrations])
 
     async function postCommment({comment}) {
       const token = await localStorage.getItem('token');
@@ -42,10 +43,12 @@ function eventsDetails({event, registrations}) {
         },
         body: JSON.stringify({comment}),
       })
-      if (request.ok) {
+      if (request.ok && user) {
+        const JSONuser = JSON.parse(user)
         const data = await request.json();
+        setRegistrations([...registrationList, { id: JSONuser.id, name: JSONuser.name, comment: comment }])
         setRegistered(true)
-        console.log('athugasemd móttekin ', data)
+        console.log('skráning móttekin ', data)
       } else {
         const message = await request.json();
         console.log(message)
@@ -63,8 +66,12 @@ function eventsDetails({event, registrations}) {
         },
         body: JSON.stringify({comment}),
       })
-      if (request.ok) {
+      if (request.ok && user) {
+        const JSONuser = JSON.parse(user)
         const data = await request.json();
+        const newRegistrationList = registrationList.filter((registration) =>
+        registration.id != JSONuser.id)
+        setRegistrations(newRegistrationList)
         setRegistered(false)
         console.log('afskráning móttekin ', data)
       } else {
@@ -78,7 +85,7 @@ function eventsDetails({event, registrations}) {
     <>
       <h1>{event.name}</h1>
       <p className="events__eventDescription">{event.description}</p>
-      {registrations.map((registration) => (
+      {registrationList.map((registration) => (
         <React.Fragment key={registration.id}>
           {Registration(registration)}
         </React.Fragment>
@@ -123,10 +130,24 @@ export default eventsDetails
 export const getServerSideProps = async (context) => {
   const res = await fetch(`${BASE_URL}/events/${context.params.id}`)
   const result = await res.json();
+  const registrations = await result.registrations
+
+  const uniqueIds = [];
+
+  const uniqueRegistrations = registrations.filter(registration => {
+  const isDuplicate = uniqueIds.includes(registration.id);
+
+  if (!isDuplicate) {
+    uniqueIds.push(registration.id);
+
+    return true;
+  }
+  });
+
   return {
     props: {
       event: result,
-      registrations: result.registrations,
+      registrations: uniqueRegistrations,
     },
   };
 };

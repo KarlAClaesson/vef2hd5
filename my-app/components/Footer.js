@@ -9,7 +9,7 @@ function Footer() {
   return (
     <footer>
       {user ? (
-        <p className="user">Skráður inn sem {user}</p>
+        <p className="user">Skráður inn sem {user.username}</p>
       ) : (
         <Link className="user" href="/register">
           Nýskrá
