@@ -1,7 +1,5 @@
-import { useEffect } from "react";
-import { useState } from "react";
-
-import Event from "./Event.js";
+import { useEffect, useState } from 'react';
+import Event from './Event';
 
 function EventList() {
   const [events, setEvents] = useState([]);
@@ -16,7 +14,7 @@ function EventList() {
 
   const fetchEvents = async () => {
     const res = await fetch(
-      "https://vef2-20222-v3-synilausn.herokuapp.com/events"
+      'https://vef2-20222-v3-synilausn.herokuapp.com/events'
     );
     const data = await res.json();
     return data.items;

@@ -1,16 +1,13 @@
-import '../styles/globals.css'
-import '../styles/styles.css'
-import { UserContextProvider } from '../utils/userContext';
+import { useEffect, useState } from 'react';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import '../styles/globals.css';
+import '../styles/styles.css';
 import { BASE_URL } from '../utils/consts';
 import UserContext from '../utils/userContext';
-import { useState, useEffect } from 'react';
-import Header from '../components/Header'
-import Footer from '../components/Footer';
-
 
 function MyApp({ Component, pageProps }) {
-  const [user, setUser] = useState(null)
-  
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     async function fetchUser() {
@@ -23,14 +20,14 @@ function MyApp({ Component, pageProps }) {
           },
         });
         if (res.ok) {
-          console.log('hér')
+          console.log('hér');
           const result = await res.json();
-          console.log(result)
+          console.log(result);
           setUser(JSON.stringify(result));
-          console.log('notandi: ', user)
+          console.log('notandi: ', user);
         } else {
           setUser(null);
-          await localStorage.setItem('token', '');
+          localStorage.setItem('token', '');
         }
       }
     }
@@ -39,16 +36,16 @@ function MyApp({ Component, pageProps }) {
   }, []);
   return (
     <UserContext.Provider
-    value={{
-      user,
-      setUser,
-    }}>
-      <Header/>
-        <Component {...pageProps} />
-      <Footer/>
+      value={{
+        user,
+        setUser,
+      }}
+    >
+      <Header />
+      <Component {...pageProps} />
+      <Footer />
     </UserContext.Provider>
-
   );
 }
 
-export default MyApp
+export default MyApp;

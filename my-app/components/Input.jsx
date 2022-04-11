@@ -1,4 +1,4 @@
-function Input({label}) {
+function Input({ label }) {
   return (
     <div className="Input">
       <label className="field_label">{label}</label>
