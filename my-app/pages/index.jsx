@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Event from './Event';
+import Event from '../components/Event';
 
 function EventList() {
   const [events, setEvents] = useState([]);
